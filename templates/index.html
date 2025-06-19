@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Danh mục đầu tư lớn</title>
+    </head>
+    <body>
+        <h2>Top cổ phiếu quỹ đang nắm giữ</h2>
+        <select id="fundSelect">
+            <option value="SSISCA">SSISCA</option>
+            <option value="DCDS">DCDS</option>
+        </select>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Mã CP</th>
+                    <th>Ngành</th>
+                    <th>Tỷ trọng (%)</th>
+                    <th>Loại tài sản</th>
+                    <th>Ngày cập nhật</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <script>
+            async function fetchHoldings(symbol) {
+                const res = await fetch(`/api/top_holdings?symbol=${symbol}`);
+                const data = await res.json();
+                const body = document.getElementById("tableBody");
+                body.innerHTML = "";
+                data.forEach((row) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+          <td>${row.stock_code}</td>
+          <td>${row.industry}</td>
+          <td>${row.net_asset_percent}</td>
+          <td>${row.type_asset}</td>
+          <td>${row.update_at}</td>
+        `;
+                    body.appendChild(tr);
+                });
+            }
+
+            document
+                .getElementById("fundSelect")
+                .addEventListener("change", (e) => {
+                    fetchHoldings(e.target.value);
+                });
+
+            fetchHoldings("SSISCA"); // Load mặc định
+        </script>
+    </body>
+</html>
