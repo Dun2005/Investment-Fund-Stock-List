@@ -1,18 +1,21 @@
-from flask import Flask, render_template, request, jsonify
-from vnstock.explorer.fmarket.fund import Fund
+import time
+from fastapi import FastAPI
+from vnstock import Fund
+from fastapi.middleware.cors import CORSMiddleware
 
-app = Flask(__name__)
 fund = Fund()
+app = FastAPI()
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.route('/api/top_holdings')
-def top_holdings():
-    symbol = request.args.get('symbol', 'SSISCA')
-    df = fund.details.top_holding(symbol)
-    return df.to_json(orient='records')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.get("/get-top-holding")
+async def root():
+    data = fund.details.top_holding('SSISCA')
+    # time.sleep(60)
+    return data.to_dict(orient="records")

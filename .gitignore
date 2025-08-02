@@ -1,3 +1,5 @@
 /.venv
 /myenv
 /myenv
+/__pycache__
+fund-analyze/README.md
